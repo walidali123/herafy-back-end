@@ -1,8 +1,9 @@
-import Job from './models/job.js';
+import Job from '../models/job.js';
 
 export const createJob = async (req, res) => {
   try {
-    const { title, description, location, date, budget, craftsmanId } = req.body;
+    const { title, description, location, date, budget, craftsmanId } =
+      req.body;
 
     const newJob = new Job({
       title,
@@ -10,12 +11,14 @@ export const createJob = async (req, res) => {
       location,
       date,
       budget,
-      craftsmanId
+      craftsmanId,
     });
 
     const savedJob = await newJob.save();
 
-    res.status(201).json({ message: 'Job listing created successfully', listing: savedJob });
+    res
+      .status(201)
+      .json({ message: 'Job listing created successfully', listing: savedJob });
   } catch (error) {
     console.error('Error creating job listing:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -63,7 +66,10 @@ export const updateJob = async (req, res) => {
       return res.status(404).json({ error: 'Job listing not found' });
     }
 
-    res.status(200).json({ message: 'Job listing updated successfully', listing: updatedJob });
+    res.status(200).json({
+      message: 'Job listing updated successfully',
+      listing: updatedJob,
+    });
   } catch (error) {
     console.error('Error updating job listing:', error);
     res.status(500).json({ error: 'Internal server error' });

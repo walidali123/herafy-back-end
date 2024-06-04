@@ -1,6 +1,12 @@
 // routes/jobRoutes.js
 import express from 'express';
-import { createJob, getAllJobs, getJobById, updateJob, deleteJob } from './controllers/job-controller.js';
+import {
+  createJob,
+  getAllJobs,
+  getJobById,
+  updateJob,
+  deleteJob,
+} from '../controllers/job-controller.js';
 
 const router = express.Router();
 
