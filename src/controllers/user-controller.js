@@ -6,7 +6,13 @@ export const registerUser = async (req, res) => {
   try {
     const { name, email, password, role, jobTitle, description } = req.body;
 
-    if (!name || !email || !password || !role) {
+    if (
+      !name ||
+      !email ||
+      !password ||
+      !role ||
+      (role === 'craftsman' && (!jobTitle || !description))
+    ) {
       return res.status(400).send('missing required fields');
     }
 
@@ -53,7 +59,10 @@ export const loginUser = async (req, res) => {
       return res.status(400).send('Invalid email or password.');
 
     const token = user.genAuthToken();
-    res.header('x-auth-token', token).send('Logged in successfully');
+    res.header('x-auth-token', token).json({
+      message: 'Logged in successfully',
+      user: user.toObject(),
+    });
   } catch (err) {
     res.status(500).send('Server error');
   }

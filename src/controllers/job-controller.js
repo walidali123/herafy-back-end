@@ -2,32 +2,32 @@ import Job from '../models/job.js';
 
 export const createJob = async (req, res) => {
   try {
-    const { title, description, location, date, budget, craftsmanId } =
-      req.body;
+    const { title, description, location, date, budget } = req.body;
 
+    const clientId = req.clientId;
     const newJob = new Job({
       title,
       description,
       location,
       date,
       budget,
-      craftsmanId,
+      clientId,
     });
 
-    const savedJob = await newJob.save();
+    await newJob.save();
 
-    res
-      .status(201)
-      .json({ message: 'Job listing created successfully', listing: savedJob });
+    res.status(200).json({ message: 'Job listing created successfully' });
   } catch (error) {
-    console.error('Error creating job listing:', error);
+    console.error('Error creating job:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
 
-export const getAllJobs = async (req, res) => {
+export const getAllJobsByClientId = async (req, res) => {
+  const clientId = req.clientId;
+
   try {
-    const jobs = await Job.find();
+    const jobs = await Job.find({ clientId: clientId });
     res.status(200).json(jobs);
   } catch (error) {
     console.error('Error retrieving job listings:', error);
@@ -41,37 +41,12 @@ export const getJobById = async (req, res) => {
     const job = await Job.findById(jobId);
 
     if (!job) {
-      return res.status(404).json({ error: 'Job listing not found' });
+      return res.status(404).json({ error: 'Job not found' });
     }
 
     res.status(200).json(job);
   } catch (error) {
     console.error('Error retrieving job listing:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-};
-
-export const updateJob = async (req, res) => {
-  try {
-    const jobId = req.params.id;
-    const { title, description, location, date, budget } = req.body;
-
-    const updatedJob = await Job.findByIdAndUpdate(
-      jobId,
-      { title, description, location, date, budget },
-      { new: true }
-    );
-
-    if (!updatedJob) {
-      return res.status(404).json({ error: 'Job listing not found' });
-    }
-
-    res.status(200).json({
-      message: 'Job listing updated successfully',
-      listing: updatedJob,
-    });
-  } catch (error) {
-    console.error('Error updating job listing:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -83,12 +58,12 @@ export const deleteJob = async (req, res) => {
     const deletedJob = await Job.findByIdAndDelete(jobId);
 
     if (!deletedJob) {
-      return res.status(404).json({ error: 'Job listing not found' });
+      return res.status(404).json({ error: 'Job not found' });
     }
 
-    res.status(200).json({ message: 'Job listing deleted successfully' });
+    res.status(200).json({ message: 'Job deleted successfully' });
   } catch (error) {
-    console.error('Error deleting job listing:', error);
+    console.error('Error deleting job: ', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };

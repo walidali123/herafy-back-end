@@ -3,35 +3,34 @@ import mongoose from 'mongoose';
 const jobSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: true
+    required: true,
   },
   description: {
     type: String,
-    required: true
+    required: true,
   },
   location: {
     type: String,
-    required: true
+    required: true,
   },
   date: {
     type: Date,
-    required: true
+    required: true,
   },
   budget: {
     type: Number,
-    required: true
+    required: true,
   },
-  craftsmanId: {
+  clientId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: true,
   },
   createdAt: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
 const Job = mongoose.model('Job', jobSchema);
-
 export default Job;
