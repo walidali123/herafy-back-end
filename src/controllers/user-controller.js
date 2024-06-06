@@ -43,7 +43,7 @@ export const registerUser = async (req, res) => {
     } else {
       console.log(error.message);
     }
-    res.status(500).send('Server error');
+    res.status(500).send({ message: 'Server error' });
   }
 };
 
@@ -52,19 +52,33 @@ export const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).send('Invalid email or password.');
+    if (!user)
+      return res.status(400).json({ message: 'Invalid email or password.' });
 
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword)
-      return res.status(400).send('Invalid email or password.');
+      return res.status(400).json({ message: 'Invalid email or password.' });
 
     const token = user.genAuthToken();
-    res.header('x-auth-token', token).json({
+
+    const userResponse = {
+      name: user.name,
+      role: user.role,
+      email: user.email,
+    };
+
+    if (user.role === 'craftsman') {
+      userResponse.jobTitle = user.jobTitle;
+      userResponse.description = user.description;
+    }
+
+    res.setHeader('x-auth-token', token);
+    res.json({
       message: 'Logged in successfully',
-      user: user.toObject(),
+      user: userResponse,
     });
   } catch (err) {
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error' });
   }
 };
 

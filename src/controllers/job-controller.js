@@ -1,16 +1,19 @@
 import Job from '../models/job.js';
+import Mongoose from 'mongoose';
 
 export const createJob = async (req, res) => {
   try {
-    const { title, description, location, date, budget } = req.body;
+    const { title, description, location, duration, budget, category } =
+      req.body;
 
     const clientId = req.clientId;
     const newJob = new Job({
       title,
       description,
       location,
-      date,
+      duration,
       budget,
+      category,
       clientId,
     });
 
@@ -18,8 +21,14 @@ export const createJob = async (req, res) => {
 
     res.status(200).json({ message: 'Job listing created successfully' });
   } catch (error) {
-    console.error('Error creating job:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    if (error instanceof Mongoose.Error.ValidationError) {
+      for (const e in error.errors) {
+        console.log(error.errors[e].message);
+      }
+    } else {
+      console.log(error.message);
+    }
+    res.status(500).send({ message: 'Server error' });
   }
 };
 

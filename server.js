@@ -3,14 +3,20 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import connectDB from './src/db/connect.js';
 import userRouter from './src/routes/user-routes.js';
-import jobRouter from './src/routes/job-routes.js'
+import jobRouter from './src/routes/job-routes.js';
 
 dotenv.config();
 
 const app = express();
 
 // middlewares
-app.use(cors());
+app.use(
+  cors({
+    origin: '*',
+    allowedHeaders: '*',
+    exposedHeaders: ['x-auth-token'],
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

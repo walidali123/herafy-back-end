@@ -13,9 +13,32 @@ const jobSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  date: {
-    type: Date,
+  duration: {
+    type: String,
     required: true,
+    enum: [
+      '1 week',
+      '2 weeks',
+      '1 month',
+      '3 months',
+      '6 months',
+      'more than 6 months',
+    ],
+  },
+  category: {
+    type: String,
+    required: true,
+    enum: [
+      'Knitting',
+      'Carpentry',
+      'Embroidery',
+      'Plumbing',
+      'TextileCrafting',
+      'Welding',
+      'Accessories',
+      'Ceramics',
+      'TextileWorks',
+    ],
   },
   budget: {
     type: Number,
