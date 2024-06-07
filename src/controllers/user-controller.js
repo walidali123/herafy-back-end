@@ -6,18 +6,12 @@ export const registerUser = async (req, res) => {
   try {
     const { name, email, password, role, jobTitle, description } = req.body;
 
-    if (
-      !name ||
-      !email ||
-      !password ||
-      !role ||
-      (role === 'craftsman' && (!jobTitle || !description))
-    ) {
+    if (!name || !email || !password || !role) {
       return res.status(400).send('missing required fields');
     }
 
     let user = await User.findOne({ email });
-    if (user) return res.status(400).send('User already registered.');
+    if (user) return res.status(400).json('User already registered.');
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -33,8 +27,20 @@ export const registerUser = async (req, res) => {
 
     await user.save();
 
+    const userResponse = {
+      name: user.name,
+      role: user.role,
+      email: user.email,
+    };
+
+    if (user.role === 'craftsman') {
+      userResponse.jobTitle = user.jobTitle;
+      userResponse.description = user.description;
+    }
+
     const token = user.genAuthToken();
-    res.header('x-auth-token', token).send('Registered successfully');
+    res.setHeader('x-auth-token', token);
+    res.json(userResponse);
   } catch (error) {
     if (error instanceof Mongoose.Error.ValidationError) {
       for (const e in error.errors) {
@@ -82,7 +88,33 @@ export const loginUser = async (req, res) => {
   }
 };
 
-// export const getUserProfile = async (req, res) => {
-//   const user = await User.findById(req.user._id).select('-password');
-//   res.send(user);
-// };
+export const getUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (req.role === 'client') {
+      return res.json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      });
+    } else if (req.role === 'craftsman') {
+      return res.json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        jobTitle: user.jobTitle,
+        description: user.description,
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
