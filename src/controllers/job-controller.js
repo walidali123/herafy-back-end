@@ -39,7 +39,17 @@ export const getAllJobsByClientId = async (req, res) => {
     const jobs = await Job.find({ clientId: clientId });
     res.status(200).json(jobs);
   } catch (error) {
-    console.error('Error retrieving job listings:', error);
+    console.error('Error retrieving job:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const getAllJobs = async (req, res) => {
+  try {
+    const jobs = await Job.find();
+    res.json(jobs);
+  } catch (error) {
+    console.error('Error retrieving job:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };

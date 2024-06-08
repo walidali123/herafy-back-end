@@ -2,6 +2,7 @@ import express from 'express';
 import {
   createJob,
   getAllJobsByClientId,
+  getAllJobs,
   getJobById,
   deleteJob,
 } from '../controllers/job-controller.js';
@@ -11,7 +12,9 @@ const router = express.Router();
 
 router.post('/', checkClientRole, createJob);
 
-router.get('/', checkClientRole, getAllJobsByClientId);
+router.get('/client', checkClientRole, getAllJobsByClientId);
+
+router.get('/', getAllJobs);
 
 router.get('/:id', getJobById);
 
